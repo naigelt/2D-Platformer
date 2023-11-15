@@ -5167,7 +5167,7 @@ Tilemap:
   - m_RefCount: 360
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   - m_RefCount: 1
-    m_Data: {r: 0.7047993, g: 0.34560984, b: 0.39545682, a: 1}
+    m_Data: {r: 0.9293466, g: 0.6340774, b: 0.72871596, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -5241,7 +5241,7 @@ TilemapRenderer:
   m_Mode: 0
   m_DetectChunkCullingBounds: 0
   m_MaskInteraction: 0
---- !u!114 &2319924973671600255
+--- !u!114 &6973304687028052647
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
