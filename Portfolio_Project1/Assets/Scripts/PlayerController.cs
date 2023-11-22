@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor.Tilemaps;
 using UnityEngine;
 
@@ -8,9 +9,15 @@ public class PlayerController : MonoBehaviour
 
     private float movementInputDirection;
     private float jumpTimer;
+    private float turnTimer;
+    private float wallJumpTimer;
+    private float dashTimeLeft;
+    private float lastImageXpos;
+    private float lastDash = -100f;
 
     private int amountOfJumpsLeft;
     private int facingDirection = 1;
+    private int lastWallJumpDirection;
 
     private bool isFacingRight = true;
     private bool isWalking;
@@ -21,6 +28,10 @@ public class PlayerController : MonoBehaviour
     private bool canWallJump;
     private bool isAttemptingToJump;
     private bool checkJumpMultiplier;
+    private bool canMove;
+    private bool canFLip;
+    private bool hasWallJumped;
+    private bool isDashing = false;
 
     private Rigidbody2D rb;
     private Animator anim;
@@ -38,6 +49,13 @@ public class PlayerController : MonoBehaviour
     public float wallHopForce;
     public float wallJumpForce;
     public float jumpTimerSet = 0.15f;
+    public float turnTimerSet = 0.1f;
+    public float wallJumpTimerSet = 0.5f;
+    public float dashTime;
+    public float dashSpeed;
+    public float distanceBetweenImages;
+    public float dashCooldown;
+
 
     public Vector2 wallHopDirection;
     public Vector2 wallJumpDirection;
@@ -60,12 +78,12 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         CheckInput();
-        ApplyMovement();
         CheckMovementDirection();
         UpdateAnimations();
         CheckIfCanJump();
         CheckIfWallSliding();
         CheckJump();
+        CheckDash();
 
     }
 
@@ -73,12 +91,13 @@ public class PlayerController : MonoBehaviour
     {
    
         CheckSurroundings();
-        
+        ApplyMovement();
+
     }
 
     private void CheckIfWallSliding()
     {
-        if (isTouchingWall && movementInputDirection == facingDirection)
+        if (isTouchingWall && movementInputDirection == facingDirection && rb.velocity.y < 0)
         {
             isWallSliding = true;
         }
@@ -130,7 +149,7 @@ public class PlayerController : MonoBehaviour
             Flip();
         }
 
-        if (rb.velocity.x != 0)
+        if (Mathf.Abs(rb.velocity.x) >= 0.01f)
         {
             isWalking = true;
         }
@@ -165,12 +184,77 @@ public class PlayerController : MonoBehaviour
             }
          }     
 
-            
+        if(Input.GetButtonDown("Horizontal") && isTouchingWall)
+        {
+            if(!isGrounded && movementInputDirection != facingDirection)
+            {
+                canMove = false;
+                canFLip = false;
+
+                turnTimer = turnTimerSet;
+            }
+        }   
+        if(!canMove)
+        {
+            turnTimer -= Time.deltaTime;
+
+            if(turnTimer <= 0)
+            {
+                canMove=true;
+                canFLip=true;
+            }
+        }
         
-        if (checkJumpMultiplier &&  !Input.GetButton("Jump"))
+        if (checkJumpMultiplier && !Input.GetButton("Jump"))
         {
             checkJumpMultiplier = false;
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * variableJumpHeightMultiplier);
+        }
+
+        if (Input.GetButtonDown("Dash"))
+        {
+            if (Time.time >= (lastDash + dashCooldown)) 
+            AttemptToDash();
+        }
+    }
+
+    private void AttemptToDash()
+    {
+        isDashing = true;
+        dashTimeLeft = dashTime;
+        lastDash = Time.time;
+
+        PlayerAfterImagePool.Instance.GetFromPool();
+        lastImageXpos = transform.position.x;
+    }
+
+    private void CheckDash()
+    {
+        if(isDashing)
+        {
+            if(dashTimeLeft > 0)
+            {
+                canMove = false;
+                canFLip = false;
+                rb.velocity = new Vector2(dashSpeed * facingDirection, 0);
+                dashTimeLeft -= Time.deltaTime;
+
+                if (Mathf.Abs(transform.position.x - lastImageXpos) > distanceBetweenImages)
+                {
+                    PlayerAfterImagePool.Instance.GetFromPool();
+                    lastImageXpos = transform.position.x;
+                }
+            }
+            
+            if(dashTimeLeft <= 0 || isTouchingWall)
+            {
+                isDashing = false;
+               
+                canMove = true;
+                canFLip = true;
+
+            }
+          
         }
     }
 
@@ -191,6 +275,22 @@ public class PlayerController : MonoBehaviour
         if(isAttemptingToJump)
         {
             jumpTimer -= Time.deltaTime;
+        }
+
+        if(wallJumpTimer > 0)
+        {
+            if(hasWallJumped && movementInputDirection == -lastWallJumpDirection)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, 0.0f);
+                hasWallJumped = false;
+            }else if(wallJumpTimer <= 0)
+            {
+                hasWallJumped = false;
+            }
+            else
+            {
+                wallJumpTimer -= Time.deltaTime;
+            }
         }
     
         
@@ -221,6 +321,13 @@ public class PlayerController : MonoBehaviour
             jumpTimer = 0;
             isAttemptingToJump = false;
             checkJumpMultiplier = true;
+            turnTimer = 0;
+            canMove = true;
+            canFLip = true;
+            hasWallJumped = true;
+            wallJumpTimer = wallJumpTimerSet;
+            lastWallJumpDirection = -facingDirection;
+
         }
     }
 
@@ -230,7 +337,7 @@ public class PlayerController : MonoBehaviour
         {
             rb.velocity = new Vector2(rb.velocity.x * airDragMultiplier, rb.velocity.y);
         }
-        else
+        else if (canMove)
         {
             rb.velocity = new Vector2(moveSpeed * movementInputDirection, rb.velocity.y);
         }
@@ -244,9 +351,18 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void DisableFlip()
+    {
+        canFLip = false;
+    }
+
+    private void EnableFlip()
+    {
+        canFLip = true;
+    }
     private void Flip()
     {
-        if (!isWallSliding)
+        if (!isWallSliding && canFLip)
         {
             facingDirection *= -1;
             isFacingRight = !isFacingRight;

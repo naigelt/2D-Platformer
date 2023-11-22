@@ -138,7 +138,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: big-floating-rock
+      name: objects_0
       rect:
         serializedVersion: 2
         x: 9
@@ -150,16 +150,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 02305410000000000800000000000000
-      internalID: 21300000
+      spriteID: 10b9dbbb83c23fb4e8834bffa172810c
+      internalID: -735012183
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: small-floating-rock
+      name: objects_1
       rect:
         serializedVersion: 2
         x: 121
@@ -171,16 +171,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 22305410000000000800000000000000
-      internalID: 21300002
+      spriteID: 04492af934b1dbe4fb0d1809257773d1
+      internalID: -184921494
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: floating-rock-2
+      name: objects_2
       rect:
         serializedVersion: 2
         x: 185
@@ -192,16 +192,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 42305410000000000800000000000000
-      internalID: 21300004
+      spriteID: 3c17ef7378499cc4db95d66f4ad69af2
+      internalID: -664998883
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: floating-rock-1
+      name: objects_3
       rect:
         serializedVersion: 2
         x: 16
@@ -213,16 +213,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 62305410000000000800000000000000
-      internalID: 21300006
+      spriteID: 5ff202766e4a5d248958be35c1d51b7f
+      internalID: 1317274123
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: tree
+      name: objects_4
       rect:
         serializedVersion: 2
         x: 159
@@ -234,10 +234,10 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 82305410000000000800000000000000
-      internalID: 21300008
+      spriteID: 1255da8902d7954479a4b069a08eaff0
+      internalID: -1914235476
       vertices: []
       indices: 
       edges: []
@@ -245,7 +245,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: d96ac15eb57014642b5cd22d21308325
     internalID: 0
     vertices: []
     indices: 
@@ -253,11 +253,11 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      big-floating-rock: 21300000
-      floating-rock-1: 21300006
-      floating-rock-2: 21300004
-      small-floating-rock: 21300002
-      tree: 21300008
+      objects_0: -735012183
+      objects_1: -184921494
+      objects_2: -664998883
+      objects_3: 1317274123
+      objects_4: -1914235476
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
