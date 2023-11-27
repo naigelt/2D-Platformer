@@ -19,28 +19,47 @@ public class BasicEnemyController : MonoBehaviour
         wallCheckDistance,
         movementSpeed,
         maxHealth,
-        knockbackDuration;
+        knockbackDuration,
+        lastTouchDamageTime,
+        touchDamageCooldown,
+        touchDamage,
+        touchDamageWidth,
+        touchDamageHeight;
 
     [SerializeField]
     private Transform
     groundCheck,
-    wallCheck;
+    wallCheck,
+    touchDamageCheck;
 
     [SerializeField]
-    private LayerMask whatIsGround;
+    private LayerMask 
+        whatIsGround,
+        whatisPlayer;
 
     [SerializeField]
     private Vector2 knockbackSpeed;
+
+    [SerializeField]
+    private GameObject
+        hitParticle,
+        deathChunkParticle,
+        deathBloodParticle;
 
     private float 
         currentHealth,
         knockbackStartTime;
 
+    private float[] attackDetails = new float[2];
+
     private int 
-        facingDirection = 1,
+        facingDirection,
         damageDirection;
 
-    private Vector2 movement;
+    private Vector2 
+        movement,
+        touchDamageBotLeft,
+        touchDamageTopRight;
 
     private bool
         groundDetected,
@@ -58,6 +77,9 @@ public class BasicEnemyController : MonoBehaviour
         alive = transform.Find("Alive").gameObject;
         aliveRB = alive.GetComponent<Rigidbody2D>();
         aliveAnim = alive.GetComponent<Animator>();
+
+        currentHealth = maxHealth;
+        facingDirection = 1;
     }
     private void Update()
     {
@@ -131,7 +153,8 @@ public class BasicEnemyController : MonoBehaviour
 
     private void EnterDeadState()
     {
-        //Spawn blood
+        Instantiate(deathChunkParticle, alive.transform.position, deathChunkParticle.transform.rotation);
+        Instantiate(deathBloodParticle, alive.transform.position, deathBloodParticle.transform.rotation);
         Destroy(gameObject);
     }
 
@@ -152,6 +175,8 @@ public class BasicEnemyController : MonoBehaviour
     {
         currentHealth -= attackDetails[0];
 
+        Instantiate(hitParticle, alive.transform.position, Quaternion.Euler(0.0f, 0.0f, Random.Range(0.0f, 360.0f)));
+
         if (attackDetails[1] > alive.transform.position.x)
         {
             damageDirection = -1;
@@ -170,6 +195,15 @@ public class BasicEnemyController : MonoBehaviour
         else if(currentHealth <= 0.0f) 
         {
             SwitchState(State.Dead);
+        }
+    }
+
+    private void CheckTouchDamage()
+    {
+        if(Time.time >= lastTouchDamageTime + touchDamageCooldown)
+        {
+            touchDamageBotLeft.Set(touchDamageCheck.position.x -(touchDamageWidth / 2), touchDamageCheck.position.y -(touchDamageHeight /2 ));
+            touchDamageBotLeft.Set(touchDamageCheck.position.x - (touchDamageWidth / 2), touchDamageCheck.position.y - (touchDamageHeight / 2));
         }
     }
     private void Flip()
