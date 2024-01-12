@@ -21,10 +21,15 @@ public class PlayerCombatController : MonoBehaviour
 
     private Animator anim;
 
+    private PlayerController PC;
+    private PlayerStats PS;
+
     private void Start()
     {
         anim = GetComponent<Animator>();
         anim.SetBool("canAttack", combatEnabled);
+        PC = GetComponent<PlayerController>();
+        PS = GetComponent<PlayerStats>();
     }
     private void Update()
     {
@@ -33,7 +38,7 @@ public class PlayerCombatController : MonoBehaviour
     }
     private void CheckCombatInput()
     {
-        if(Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
             if (combatEnabled)
             {
@@ -45,9 +50,9 @@ public class PlayerCombatController : MonoBehaviour
 
     private void CheckAttacks()
     {
-        if(gotInput)
+        if (gotInput)
         {
-            if(!isAttacking)
+            if (!isAttacking)
             {
                 gotInput = false;
                 isAttacking = true;
@@ -58,7 +63,7 @@ public class PlayerCombatController : MonoBehaviour
             }
         }
 
-        if(Time.time >= lastInputTime + inputTimer)
+        if (Time.time >= lastInputTime + inputTimer)
         {
             gotInput = false;
         }
@@ -84,6 +89,28 @@ public class PlayerCombatController : MonoBehaviour
         isAttacking = false;
         anim.SetBool("isAttacking", isAttacking);
         anim.SetBool("attack1", false);
+    }
+
+    private void Damage(float[] attackDetails)
+    {
+        if (!PC.GetDashStatus())
+        {
+            int direction;
+
+            PS.DecreaseHealth(attackDetails[0]);
+
+            if (attackDetails[1] < transform.position.x)
+            {
+                direction = 1;
+            }
+            else
+            {
+                direction = -1;
+            }
+
+            PC.Knockback(direction);
+        }
+
     }
 
     private void OnDrawGizmos()
